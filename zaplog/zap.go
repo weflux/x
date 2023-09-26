@@ -2,19 +2,18 @@ package zaplog
 
 import (
 	"context"
-	"github.com/weflux/x/log"
-	"github.com/weflux/x/slices"
+	"github.com/weflux/x/logging"
 	"go.uber.org/zap"
 )
 
-var _ log.Logger = new(ZapLogger)
+var _ logging.Logger = new(ZapLogger)
 
 func New(
 	zlog *zap.Logger,
 ) *ZapLogger {
 	return &ZapLogger{
 		zlog: zlog,
-		ctx:  context.Background(),
+		//ctx:  context.Background(),
 	}
 }
 
@@ -36,63 +35,79 @@ func NewDevelopment() *ZapLogger {
 
 type ZapLogger struct {
 	zlog *zap.Logger
-	ctx  context.Context
+	//ctx    context.Context
+	//fields []zap.Field
 }
 
-func (z *ZapLogger) WithContext(ctx context.Context) log.Logger {
+func (z *ZapLogger) WithContext(ctx context.Context) logging.Logger {
+	fields := []zap.Field{}
+	for k, v := range logging.ContextFields(ctx) {
+		fields = append(fields, zap.Any(k.(string), v))
+	}
+
 	return &ZapLogger{
-		zlog: z.zlog,
-		ctx:  log.MergeContext(z.ctx, ctx),
+		zlog: z.zlog.With(fields...),
+		//fields: fields,
 	}
 }
 
-func (z *ZapLogger) WithValues(kvs ...interface{}) log.Logger {
-	z.ctx = log.Context(z.ctx, kvs...)
+func (z *ZapLogger) With(args ...interface{}) logging.Logger {
+	//z.ctx = log.Context(z.ctx, args...)
+	//fields := z.fields
+	fields := []zap.Field{}
+	for k, v := range logging.SliceToMap(args) {
+		fields = append(fields, zap.Any(k.(string), v))
+	}
 	return &ZapLogger{
-		zlog: z.zlog,
-		ctx:  z.ctx,
+		zlog: z.zlog.With(fields...),
+		//ctx:  z.ctx,
+		//fields: fields,
 	}
 }
 
-func (z *ZapLogger) Fatal(msg string, kvs ...interface{}) {
-	var fields []zap.Field
-	for k, v := range slices.SliceToMap(kvs) {
+func (z *ZapLogger) Fatal(msg string, args ...interface{}) {
+	//fields := z.fields
+	fields := []zap.Field{}
+	for k, v := range logging.SliceToMap(args) {
 		fields = append(fields, zap.Any(k.(string), v))
 	}
 	z.zlog.Fatal(msg, fields...)
 }
 
-func (z *ZapLogger) Error(msg string, err error, kvs ...interface{}) {
-	var fields []zap.Field
-	fields = append(fields, zap.Any("error", err))
-	for k, v := range slices.SliceToMap(kvs) {
+func (z *ZapLogger) Error(msg string, args ...interface{}) {
+	//fields := z.fields
+	fields := []zap.Field{}
+	for k, v := range logging.SliceToMap(args) {
 		fields = append(fields, zap.Any(k.(string), v))
 	}
 	z.zlog.Error(msg, fields...)
 }
 
-func (z *ZapLogger) Warn(msg string, kvs ...interface{}) {
+func (z *ZapLogger) Warn(msg string, args ...interface{}) {
 
-	var fields []zap.Field
-	for k, v := range slices.SliceToMap(kvs) {
+	//fields := z.fields
+	fields := []zap.Field{}
+	for k, v := range logging.SliceToMap(args) {
 		fields = append(fields, zap.Any(k.(string), v))
 	}
 	z.zlog.Warn(msg, fields...)
 }
 
-func (z *ZapLogger) Debug(msg string, kvs ...interface{}) {
+func (z *ZapLogger) Debug(msg string, args ...interface{}) {
 
-	var fields []zap.Field
-	for k, v := range slices.SliceToMap(kvs) {
+	//fields := z.fields
+	fields := []zap.Field{}
+	for k, v := range logging.SliceToMap(args) {
 		fields = append(fields, zap.Any(k.(string), v))
 	}
 	z.zlog.Debug(msg, fields...)
 }
 
-func (z *ZapLogger) Info(msg string, kvs ...interface{}) {
+func (z *ZapLogger) Info(msg string, args ...interface{}) {
 
-	var fields []zap.Field
-	for k, v := range slices.SliceToMap(kvs) {
+	//fields := z.fields
+	fields := []zap.Field{}
+	for k, v := range logging.SliceToMap(args) {
 		fields = append(fields, zap.Any(k.(string), v))
 	}
 	z.zlog.Info(msg, fields...)
