@@ -2,7 +2,7 @@ package structs
 
 import "github.com/mitchellh/mapstructure"
 
-func MapTo(input interface{}, output interface{}, tagName ...string) error {
+func Convert(input interface{}, output interface{}, tagName ...string) error {
 	tag := "redis"
 	if len(tagName) > 1 {
 		tag = tagName[0]

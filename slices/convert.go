@@ -1,6 +1,6 @@
 package slices
 
-func SliceToMap(kvs ...interface{}) map[interface{}]interface{} {
+func ToMap(kvs ...interface{}) map[interface{}]interface{} {
 	m := map[interface{}]interface{}{}
 	for i := 2; i < len(kvs); i += 2 {
 		m[kvs[i-2]] = m[kvs[i-1]]

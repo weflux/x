@@ -9,12 +9,22 @@ func init() {
 	extra.RegisterFuzzyDecoders()
 }
 
-var JSON = jsoniter.ConfigCompatibleWithStandardLibrary
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 func Marshal(v interface{}) ([]byte, error) {
-	return JSON.Marshal(v)
+	return json.Marshal(v)
 }
 
 func Unmarshal(data []byte, v interface{}) error {
-	return JSON.Unmarshal(data, v)
+	return json.Unmarshal(data, v)
+}
+
+func SafeMarshal(v interface{}) []byte {
+	bs, _ := Marshal(v)
+	return bs
+}
+
+func SafeMarshalString(v interface{}) string {
+	bs := SafeMarshal(v)
+	return string(bs)
 }
